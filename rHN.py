@@ -41,7 +41,7 @@ class rHN:
   
   def relax(self):
 
-    for t in range(T):
+    for t in range(self.T):
 
       self.S = self.S + self.dt * -self.S + self.dt * torch.tanh(self.W @ self.S)
 
