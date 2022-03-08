@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 class rHN:
 
-  def __init__(self, W, W0, topologymask, T, dt, lr=0.0001, hebbian=False):
+  def __init__(self, W, W0, topologymask, T, dt=0.1, lr=0.0001, hebbian=False):
 
     self.W = W
 
@@ -39,13 +39,25 @@ class rHN:
 
     self.lr = lr
   
-  def relax(self):
+  def relax(self, discrete=False):
 
-    for t in range(self.T):
+    if discrete:
 
-      self.S = self.S + self.dt * -self.S + self.dt * torch.tanh(self.W @ self.S)
+      for t in range(self.T):
 
-      self.E[0, t] = -((self.S.T @ self.W0) @ self.S)/2
+        index = np.random.randint(0, len(self.S))
+
+        self.S[index] = torch.sign(self.W[index] @ self.S)
+
+        self.E[0, t] = -((self.S.T @ self.W0) @ self.S)/2
+      
+    else:
+
+      for t in range(self.T):
+
+        self.S = self.S + self.dt * -self.S + self.dt * torch.tanh(self.W @ self.S)
+
+        self.E[0, t] = -((self.S.T @ self.W0) @ self.S)/2
     
     if self.hebbian:
 
